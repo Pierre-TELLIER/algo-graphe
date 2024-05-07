@@ -32,8 +32,7 @@ def calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites)
 def calculer_degat_total(positions_des_drones, temps_actuel, villages_visites, fuites_eau):
     degat_total = 0
     for village, dernier_passage in villages_visites.items():
-        temps_attente = temps_actuel - dernier_passage
-        degat_total += fuites_eau[village] * temps_attente
+        degat_total += fuites_eau[village] 
     
     return degat_total
 
