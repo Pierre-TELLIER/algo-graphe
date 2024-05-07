@@ -19,6 +19,8 @@ def test_position():
     positions_des_drones = position(villages, nombre_de_drones)
     print(positions_des_drones)
 
+#test_position()
+
 
 def calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites):
     degat_maximal = 0
@@ -36,6 +38,9 @@ def calculer_degat_total(positions_des_drones, temps_actuel, villages_visites, f
     
     return degat_total
 
+#def trajet_optimal(position_inital, destination_final):
+    
+
 def test_fuite():
     positions_des_drones = [(3, 4), (5, 6), (7, 8)]
     temps_actuel = 10
@@ -45,6 +50,8 @@ def test_fuite():
     degat_total = calculer_degat_total(positions_des_drones, temps_actuel, villages_visites, fuites_eau)
     print("Dégât total (impact des fuites d'eau):", degat_total)
 
+#test_fuite()
+
 
 def test_degat():
     positions_des_drones = [(3, 4), (5, 6), (7, 8)]
@@ -52,4 +59,6 @@ def test_degat():
     villages_visites = {1: 5, 2: 8, 3: 12} #( 1 id de village et 5 le moment ou le dernier drone a visité ce village )
     degat_maximal = calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites)
     print("Dégât maximal:", degat_maximal)
+
+#test_degat()
 
