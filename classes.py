@@ -1,17 +1,17 @@
 class Config:
-    def __init__(self, graph, drones, obstacle, village: list):
+    def __init__(self, graph, drones, obstacle, villages: list, n):
         self.graph = graph
         self.drones = drones
         self.obstacle = obstacle
-        self.village = village
+        self.villages = villages
+        self.n = n
 
 
 class Village:
     def __init__(self, village_id, x, y):
-        self.id = village_id
+        self.village_id = village_id
         self.x = x
         self.y = y
-
 
 
 class Obstacle:
@@ -26,4 +26,3 @@ class Drone:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
