@@ -18,11 +18,11 @@ def read_world_file(n, file_name):
 
             if entity.isdigit():  # C'est un village
                 coordinates = tuple(map(int, data.strip('()').split(',')))
-                villages.append(Village(entity, coordinates[0], coordinates[1]))
+                villages.append(Village(entity, coordinates[0], coordinates[1], N))
                 G.add_node(coordinates[0] + n * coordinates[1], pos=coordinates, cat="village", label=entity)
             elif entity == 'D':  # C'est un drone
                 drone_pos = tuple(map(int, data.strip('()').split(',')))
-                drones.append(Drone(drone_pos[0], drone_pos[1]))
+                drones.append(Drone(drone_pos[0], drone_pos[1], []))
             elif entity == 'X':  # C'est un obstacle
                 corners = data.split(';')
                 corner1 = tuple(map(int, corners[0].strip(' ()').split(',')))
@@ -36,9 +36,9 @@ def read_world_file(n, file_name):
                         v1 = tmp_v
                     if tmp_v.village_id == v[1]:
                         v2 = tmp_v
-                G.add_edge(int(v1.get_position(n)), int(v2.get_position(n)))
+                G.add_edge(v1.nodeID, v2.nodeID)
 
-    tmp_conf =Config(G, drones, obstacles, villages, n, euclidian_path)
+    tmp_conf = Config(G, drones, obstacles, villages, n, euclidian_path)
 
     if euclidian_path:
         blocked = tmp_conf.get_blocked_nodes()
@@ -47,7 +47,6 @@ def read_world_file(n, file_name):
                 cur = i + n * j
                 try:
                     G.nodes[cur]
-                    print(f"node {cur} is already there")
                 except KeyError:
                     G.add_node(cur, pos=(i, j), cat="path")
                 if cur in blocked:
@@ -97,6 +96,5 @@ def draw_graph(config):
     plt.legend()
     plt.show()
 
-
-# Supposons que vous avez déjà créé votre graphe 'graph' avec la fonction 'read_world_file'
-draw_graph(gameConfig)
+if __name__ == '__main__':
+    draw_graph(gameConfig)
