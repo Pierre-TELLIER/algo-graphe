@@ -108,10 +108,29 @@ def test_trajetOptimal() :
     meilleure_tournée, meilleur_temps = trouver_trajet_optimal(villages, drones, distances)
 
     print("Meilleure tournée trouvée :", meilleure_tournée)
-
     #la meilleure tournée trouvée est [(1, 2), (3, 4)], ce qui signifie que deux drones sont utilisés. Le premier drone parcourt les villages 1 et 2 dans cet ordre, tandis que le deuxième drone parcourt les villages 3 et 4.
-
     print("Meilleur temps de parcours :", meilleur_temps)
 
 #test_trajetOptimal()
+
+#l'idée c'est de choisir les villages d'une facon aleatoire 
+def generer_solution_initiale(villages, drones):
+    # Générer une solution initiale aléatoire
+    solution = []
+    villages_copies = villages.copy()
+    random.shuffle(villages_copies)
+    for i in range(drones):
+        solution.append(villages_copies[i::drones])
+    return solution
+
+
+def test_tr():
+    villages = [1, 2, 3, 4]
+    drones = 2
+    meilleure_solution = generer_solution_initiale(villages, drones)
+    print("Solution initiale aléatoire :", meilleure_solution)
+
+test_tr()
+
+    
 
