@@ -1,10 +1,19 @@
 class Config:
-    def __init__(self, graph, drones, obstacle, villages: list, n):
+    def __init__(self, graph, drones, obstacle, villages: list, n, full: bool):
         self.graph = graph
         self.drones = drones
         self.obstacle = obstacle
         self.villages = villages
         self.n = n
+        self.full = full
+
+    def get_blocked_nodes(self):
+        r = []
+        for o in self.obstacle:
+            for x in range(o.x1, o.x2):
+                for y in range(o.y1, o.y2):
+                    r.append(x + self.n*y)
+        return r
 
 
 class Village:
@@ -12,6 +21,10 @@ class Village:
         self.village_id = village_id
         self.x = x
         self.y = y
+        self.pos = (x, y)
+
+    def get_position(self, n):
+        return self.x + n * self.y
 
 
 class Obstacle:
