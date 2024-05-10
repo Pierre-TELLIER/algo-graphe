@@ -3,24 +3,33 @@
 #placement des drones dans les villages 
 import random
 import itertools
+from classes import *
+from projet_drone import *
 
-def position(villages, drones):
-    positions = set() 
-    for i in range(drones):
-        position = random.choice(villages) 
-        while position in positions:  # Vérifier si la position est déjà occupée
-            position = random.choice(villages)
-        positions.add(position) 
-    return list(positions)
+
+def set_drone_position(config: Config):
+    occupied_villages = set()
+    for drone in config.drones:
+        start_village = random.choice(config.villages)
+        while start_village in occupied_villages:  # Vérifier si la position est déjà occupée
+            start_village = random.choice(config.villages)
+        occupied_villages.add(start_village)
+        drone.add_to_trajet(start_village.village_id)
 
 
 def test_position():
-    villages = [1, 32, 41, 56]
-    nombre_de_drones = 3
-    positions_des_drones = position(villages, nombre_de_drones)
-    print(positions_des_drones)
+    config = read_world_file(30, "file_test.txt")
+    set_drone_position(config)
+    positions_occupe = []
 
-#test_position()
+    for drone in config.drones:
+        assert len(drone.trajet) > 0
+        assert drone.trajet[0] not in positions_occupe
+        positions_occupe.append(drone.trajet[0])
+
+    print("test position aléatoires => OK")
+
+
 
 
 def calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites):
@@ -130,7 +139,8 @@ def test_tr():
     meilleure_solution = generer_solution_initiale(villages, drones)
     print("Solution initiale aléatoire :", meilleure_solution)
 
-test_tr()
+# test_tr()
 
-    
+if __name__ == "__main__":
+    test_position()
 
