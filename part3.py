@@ -7,14 +7,15 @@ from classes import *
 from projet_drone import *
 
 
+
 def set_drone_position(config: Config):
     occupied_villages = set()
     for drone in config.drones:
         start_village = random.choice(config.villages)
-        while start_village in occupied_villages:  # Vérifier si la position est déjà occupée
+        while start_village in occupied_villages:  
             start_village = random.choice(config.villages)
         occupied_villages.add(start_village)
-        drone.add_to_trajet(start_village.village_id)
+        drone.add_to_trajet(config.graph, start_village) 
 
 
 def test_position():
@@ -29,118 +30,65 @@ def test_position():
 
     print("test position aléatoires => OK")
 
+def calculer_degats_optimal(config):
+    g = config.graph
+    delays = {}
+    for village1 in config.villages:
+        for village2 in config.villages:
+            if village1 != village2:
+                delays[(village1.nodeID, village2.nodeID)] = shortest_path_length(g, village1.nodeID, village2.nodeID)
+
+    damages = {}
+    for village in config.villages:
+        damages[village.nodeID] = {}
+        for time in range(config.n):
+            damages[village.nodeID][time] = 0
+
+    for village in config.villages:
+        for time in range(config.n):
+            for prev_village in config.villages:
+                if prev_village != village:
+                    damages[village.nodeID][time] = max(damages[village.nodeID][time], time * delays[(prev_village.nodeID, village.nodeID)])
+
+    optimal_path = []
+    for time in range(config.n):
+        min_damage = float('inf')
+        best_village = None
+        for village in config.villages:
+            if damages[village.nodeID][time] < min_damage:
+                min_damage = damages[village.nodeID][time]
+                best_village = village
+        optimal_path.append((best_village, time))
+
+    return optimal_path
+
+def test_trajet_optimal():
+    config = read_world_file(30, "file_test.txt")
+    set_drone_position(config)
+    trajet_optimal = calculer_degats_optimal(config)
+    print("test trajet optimal => OK")
+
+#my methode to decide the road for each drone is to be random .
+def generate_random_path(config):
+    random_path = []
+    for time in range(config.n):
+        path_at_time = []
+        for drone in config.drones:
+            random_village = random.choice(config.villages)
+            path_at_time.append((random_village, time))
+        random_path.append(path_at_time)
+    return random_path
 
 
-
-def calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites):
-    degat_maximal = 0
-    
-    for village, dernier_passage in villages_visites.items():
-        temps_attente = temps_actuel - dernier_passage
-        degat_maximal = max(degat_maximal, temps_attente)
-    
-    return degat_maximal
-
-def calculer_degat_total(positions_des_drones, temps_actuel, villages_visites, fuites_eau):
-    degat_total = 0
-    for village, dernier_passage in villages_visites.items():
-        degat_total += fuites_eau[village] 
-    
-    return degat_total
-
-#def trajet_optimal(position_inital, destination_final):
-    
-
-def test_fuite():
-    positions_des_drones = [(3, 4), (5, 6), (7, 8)]
-    temps_actuel = 10
-    villages_visites = {1: 5, 2: 8, 3: 12}
-    fuites_eau = {1: 10, 2: 5, 3: 8}  # Quantité d'eau perdue dans chaque village en raison de la fuite
-
-    degat_total = calculer_degat_total(positions_des_drones, temps_actuel, villages_visites, fuites_eau)
-    print("Dégât total (impact des fuites d'eau):", degat_total)
-
-#test_fuite()
+def test_generate_random_path():
+    config = read_world_file(30, "file_test.txt")
+    random_path = generate_random_path(config)
+    print("test generate random path => OK")
 
 
-def test_degat():
-    positions_des_drones = [(3, 4), (5, 6), (7, 8)]
-    temps_actuel = 10
-    villages_visites = {1: 5, 2: 8, 3: 12} #( 1 id de village et 5 le moment ou le dernier drone a visité ce village )
-    degat_maximal = calculer_degat_maximal(positions_des_drones, temps_actuel, villages_visites)
-    print("Dégât maximal:", degat_maximal)
-
-#test_degat()
-
-def calculer_temps_de_parcours(tournée, distances):
-    temps = 0
-    for i in range(len(tournée) - 1):
-        village_actuel = tournée[i]
-        village_suivant = tournée[i + 1]
-        temps += distances[(village_actuel, village_suivant)]  
-    return temps
-
-
-#fonction pour le trajet optimal d'une drone
-
-
-def trouver_trajet_optimal(villages, drones, distances):
-    meilleure_tournée = None
-    meilleur_temps = float('inf')
-    
-    permutations = itertools.permutations(villages)
-    
-    for permutation in permutations:
-        temps_total = 0
-        tournées = [permutation[i:i+drones] for i in range(0, len(permutation), drones)]
-        
-        for tournée in tournées:
-            temps_tournée = calculer_temps_de_parcours(tournée, distances)
-            temps_total += temps_tournée
-        
-        if temps_total < meilleur_temps:
-            meilleure_tournée = tournées
-            meilleur_temps = temps_total
-    
-    return meilleure_tournée, meilleur_temps
-
-def test_trajetOptimal() :
-    villages = [1, 2, 3, 4]  
-    drones = 2  
-    distances = {
-        (1, 2): 10, (1, 3): 15, (1, 4): 20,
-        (2, 1): 10, (2, 3): 35, (2, 4): 25,
-        (3, 1): 15, (3, 2): 35, (3, 4): 30,
-        (4, 1): 20, (4, 2): 25, (4, 3): 30
-}  
-
-    meilleure_tournée, meilleur_temps = trouver_trajet_optimal(villages, drones, distances)
-
-    print("Meilleure tournée trouvée :", meilleure_tournée)
-    #la meilleure tournée trouvée est [(1, 2), (3, 4)], ce qui signifie que deux drones sont utilisés. Le premier drone parcourt les villages 1 et 2 dans cet ordre, tandis que le deuxième drone parcourt les villages 3 et 4.
-    print("Meilleur temps de parcours :", meilleur_temps)
-
-#test_trajetOptimal()
-
-#l'idée c'est de choisir les villages d'une facon aleatoire 
-def generer_solution_initiale(villages, drones):
-    # Générer une solution initiale aléatoire
-    solution = []
-    villages_copies = villages.copy()
-    random.shuffle(villages_copies)
-    for i in range(drones):
-        solution.append(villages_copies[i::drones])
-    return solution
-
-
-def test_tr():
-    villages = [1, 2, 3, 4]
-    drones = 2
-    meilleure_solution = generer_solution_initiale(villages, drones)
-    print("Solution initiale aléatoire :", meilleure_solution)
-
-# test_tr()
 
 if __name__ == "__main__":
     test_position()
+    test_trajet_optimal()
+    test_generate_random_path()
 

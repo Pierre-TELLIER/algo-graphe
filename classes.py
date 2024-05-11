@@ -76,7 +76,12 @@ class Drone:
             self.isOnVillage = True
         return self.trajet[self.cur_pos]
 
+
     def add_to_trajet(self, g, v: Village):
-        self.delay[len(self.delay)-1] = shortest_path_length(g, self.trajet[0].nodeID, v.nodeID)
+        if not self.delay:
+            self.delay.append(0) 
+        else:
+            self.delay[len(self.delay)-1] = shortest_path_length(g, self.trajet[0].nodeID, v.nodeID)
         self.trajet.append(v)
         self.delay.append(shortest_path_length(g, self.trajet[-1].nodeID, v.nodeID))
+
