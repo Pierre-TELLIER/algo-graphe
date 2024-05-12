@@ -5,6 +5,8 @@ import random
 import itertools
 from classes import *
 from projet_drone import *
+from projet_drone import draw_graph
+
 
 
 
@@ -67,6 +69,7 @@ def test_trajet_optimal():
     config = read_world_file(30, "file_test.txt")
     set_drone_position(config)
     trajet_optimal = calculer_degats_optimal(config)
+    draw_graph(config);
     print("test trajet optimal => OK")
 
 #my methode to decide the road for each drone is to be random .
