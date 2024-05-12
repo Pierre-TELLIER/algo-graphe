@@ -18,7 +18,7 @@ def read_world_file(n, file_name):
 
             if entity.isdigit():  # C'est un village
                 coordinates = tuple(map(int, data.strip('()').split(',')))
-                villages.append(Village(entity, coordinates[0], coordinates[1], N))
+                villages.append(Village(entity, coordinates[0], coordinates[1], n))
                 G.add_node(coordinates[0] + n * coordinates[1], pos=coordinates, cat="village", label=entity)
             elif entity == 'D':  # C'est un drone
                 drone_pos = tuple(map(int, data.strip('()').split(',')))
@@ -60,8 +60,7 @@ def read_world_file(n, file_name):
 
 
 # Utilisation de l'exemple
-N = 30
-gameConfig = read_world_file(N, "file_test.txt")
+
 
 
 def draw_graph(config):
@@ -83,10 +82,22 @@ def draw_graph(config):
         nx.draw_networkx_labels(config.graph, pos, label)
     else:
         nx.draw_networkx_nodes(config.graph, pos, node_size=700, node_color='skyblue',
-                               nodelist=[v.get_position(config.n) for v in config.villages], label="villages")
+                               nodelist=[v.nodeID for v in config.villages], label="villages")
         nx.draw_networkx_labels(config.graph, pos, label)
     # Dessine les arêtes
-    nx.draw_networkx_edges(config.graph, pos, alpha=0.5, width=2)
+
+    drone_path = []
+    colors = ["blue", "red", "green", "yellow", "purple"]
+    for i in range(len(config.drones)):
+        drone_path_tmp = []
+        array = []
+        for j in range(len(config.drones[i].trajet)):
+            array += shortest_path(config.graph, config.drones[i].trajet[j].nodeID, config.drones[i].trajet[(j+1) % len(config.drones[i].trajet)].nodeID)
+
+        drone_path_tmp = [(array[i], array[i+1 % len(array) ])for i in range(len(array) - 1)]
+        drone_path += drone_path_tmp
+        nx.draw_networkx_edges(config.graph, pos, alpha=1, width=2, edgelist=drone_path_tmp, edge_color=colors[i])
+    nx.draw_networkx_edges(config.graph, pos, alpha=0.5, width=1, nodelist=[x for x in config.graph.edges() if x not in drone_path])
     # Dessine les étiquettes des nœuds
     # nx.draw_networkx_labels(config.graph, pos, font_size=12, font_family='sans-serif')
 
@@ -97,4 +108,6 @@ def draw_graph(config):
     plt.show()
 
 if __name__ == '__main__':
+    N = 30
+    gameConfig = read_world_file(N, "file_test.txt")
     draw_graph(gameConfig)

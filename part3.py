@@ -30,6 +30,7 @@ def test_position():
 
     print("test position aléatoires => OK")
 
+
 def calculer_degats_optimal(config):
     g = config.graph
     delays = {}
