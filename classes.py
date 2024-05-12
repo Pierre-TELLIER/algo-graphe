@@ -1,7 +1,7 @@
 from networkx import *
 
 class Config:
-    def __init__(self, graph, drones, obstacle, villages: list, n, full: bool):
+    def _init_(self, graph, drones, obstacle, villages: list, n, full: bool):
         self.graph = graph
         self.drones = drones
         self.obstacle = obstacle
@@ -19,7 +19,7 @@ class Config:
 
 
 class Village:
-    def __init__(self, village_id, x, y, n):
+    def _init_(self, village_id, x, y, n):
         self.village_id = village_id
         self.x = x
         self.y = y
@@ -36,7 +36,7 @@ class Village:
 
 
 class Obstacle:
-    def __init__(self, x1, y1, x2, y2):
+    def _init_(self, x1, y1, x2, y2):
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -49,7 +49,7 @@ class Drone:
     delay is a list of times between each drone stop.
     delay[i] is the number of seconds between the village i-1 and the village i
     """
-    def __init__(self, x, y, trajet):
+    def _init_(self, x, y, trajet):
         self.x = x
         self.y = y
         self.trajet = trajet
@@ -85,3 +85,16 @@ class Drone:
         self.trajet.append(v)
         self.delay.append(shortest_path_length(g, self.trajet[-1].nodeID, v.nodeID))
 
+class Node:
+    def _init_(self, x, y, village=None, parent=None):
+        self.x = x
+        self.y = y
+        self.parent = parent
+        self.village = village
+        self.f = 0
+        self.g = 0
+        self.h = 0
+        self.nodeID = x + y * 1000  # Assuming '1000' is enough to uniquely identify a node based on x and y
+
+    def _lt_(self, other):
+        return self.f < other.f
