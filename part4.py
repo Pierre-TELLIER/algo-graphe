@@ -4,8 +4,10 @@ from part3 import  calculer_degats_optimal
 from classes import *
 
 
-#heuristique prenant en compte les dégats de fuite d'eau
+
 """
+heuristique prenant en compte les dégats de fuite d'eau mais ne fonctionnant pas dans le contexte
+
 def heuristic_degats(node, destination, config):
     dist = distance(node, destination)
     degats =  calculer_degats_optimal(config)
@@ -27,7 +29,6 @@ def a_star(config, start, goal):
     N = config.n
     grid = [[0] * N for _ in range(N)]
     
-    # Setting up obstacles in the grid
     for o in config.obstacle:
         for x in range(o.x1, o.x2 + 1):
             for y in range(o.y1, o.y2 + 1):
@@ -73,9 +74,23 @@ def a_star(config, start, goal):
 
     return []
 
+obstacles = [Obstacle(3, 3, 5, 5), Obstacle(24, 8, 26, 24)]
+villages = [Village(1, 0, 0, 10), Village(2, 9, 9, 10)]
+drones = [Drone(0, 0, [])] 
+config = Config(None, drones, obstacles, villages, 10, True)
+
+start = (0, 0)
+goal = (9, 9)
+
+path = a_star(config, start, goal)
+print("Path from start to goal:", path)
+
+"""
+Fonctions mentionnées sur le rapport comme ne fonctionnant pas leur objectif étant de calculer pour chaque drône le trajet optimal au niveau de la minimisation des degats 
+de fuite d'eau et de l'acheminement messages-objets
 
 
-"""class Drone(BaseDrone):
+class Drone(Drone):
     def plan_path(self, config, start, goal):
         start_node = Node(start[0], start[1])
         goal_node = Node(goal[0], goal[1])
@@ -95,21 +110,12 @@ def a_star(config, start, goal):
                 for pos in path:
                     new_trajet.append(Village(pos[0], pos[1], 0))
                 new_trajet.append(village)
-        self.trajet = new_trajet """
+        self.trajet = new_trajet 
     
 
-obstacles = [Obstacle(3, 3, 5, 5), Obstacle(24, 8, 26, 24)]
-villages = [Village(1, 0, 0, 10), Village(2, 9, 9, 10)]
-drones = [Drone(0, 0, [])] 
-config = Config(None, drones, obstacles, villages, 10, True)
 
-start = (0, 0)
-goal = (9, 9)
 
-path = a_star(config, start, goal)
-print("Path from start to goal:", path)
-
-"""
+Test destiné à tester les fonctions plan_path et update_trajectory
 N = 100  
 
 coordonnees_villages = [
@@ -130,13 +136,11 @@ for village_id, x, y in coordonnees_villages:
     villages.append(village)
 
 
-
 distances = {
         (1, 2): 10, (1, 3): 15, (1, 4): 20,
         (2, 1): 10, (2, 3): 35, (2, 4): 25,
         (3, 1): 15, (3, 2): 35, (3, 4): 30,
         (4, 1): 20, (4, 2): 25, (4, 3): 30 }
-
 
 
 drones = []
