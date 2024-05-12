@@ -87,7 +87,7 @@ def draw_graph(config):
     # Dessine les arêtes
 
     drone_path = []
-    colors = ["blue", "red", "green", "yellow", "purple"]
+    colors = ["blue", "red", "green", "yellow", "purple", "orange"]
     for i in range(len(config.drones)):
         drone_path_tmp = []
         array = []
@@ -96,7 +96,7 @@ def draw_graph(config):
 
         drone_path_tmp = [(array[i], array[i+1 % len(array) ])for i in range(len(array) - 1)]
         drone_path += drone_path_tmp
-        nx.draw_networkx_edges(config.graph, pos, alpha=1, width=2, edgelist=drone_path_tmp, edge_color=colors[i])
+        nx.draw_networkx_edges(config.graph, pos, alpha=1, width=2, edgelist=drone_path_tmp, edge_color=colors[i%6])
     nx.draw_networkx_edges(config.graph, pos, alpha=0.5, width=1, nodelist=[x for x in config.graph.edges() if x not in drone_path])
     # Dessine les étiquettes des nœuds
     # nx.draw_networkx_labels(config.graph, pos, font_size=12, font_family='sans-serif')
