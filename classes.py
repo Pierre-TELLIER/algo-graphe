@@ -114,7 +114,7 @@ class Node:
         self.h = 0
         self.nodeID = x + y * 1000  # Assuming '1000' is enough to uniquely identify a node based on x and y
 
-    def _lt_(self, other):
+    def __lt__(self, other):
         return self.f < other.f
 
 
